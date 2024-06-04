@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const userRouter = require("./routes/user.route");
+const authRouter = require("./routes/auth.route");
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -20,8 +21,9 @@ mongoose
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-app.get('/',(req,res)=>{
-  res.send('hello world')
-})
+app.get("/", (req, res) => {
+  res.send("hello world");
+});
 // use the user router:
 app.use("/api/user", userRouter);
+app.use("/api/auth", authRouter);

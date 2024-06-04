@@ -4,5 +4,4 @@ const userController = require("../controllers/user.control");
 
 // test api:
 router.get("/test", userController.test);
-
 module.exports = router;
