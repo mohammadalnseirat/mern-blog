@@ -27,3 +27,14 @@ app.get("/", (req, res) => {
 // use the user router:
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+
+// Add middleware and a function to handle errors:
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
+  });
+});
