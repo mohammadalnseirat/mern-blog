@@ -1,9 +1,9 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
-const {handleErrors }=require('../utils/error')
+const { handleErrors } = require("../utils/error");
 
 // post request for signup:
-const signup_post = async (req, res,next) => {
+const signup_post = async (req, res, next) => {
   //   console.log(req.body);
   const { username, email, password } = req.body;
   //   condition to check all inputs:
@@ -16,7 +16,9 @@ const signup_post = async (req, res,next) => {
     password === ""
   ) {
     // return res.status(400).json({ message: "All fields are required!" });
-    next(handleErrors(400,'All fields are required! Please fill all the fields!'))
+    next(
+      handleErrors(400, "All fields are required! Please fill all the fields!")
+    );
   }
 
   // hash password:
@@ -30,14 +32,13 @@ const signup_post = async (req, res,next) => {
   });
 
   try {
-      // save to database
-  await newUser.save();
-  res.json("signup successfull");
+    // save to database
+    await newUser.save();
+    res.json("signup successfull");
   } catch (error) {
     // res.status(500).json({message:error.message});
-    next(error)
+    next(error);
   }
-
 };
 
 module.exports = { signup_post };
