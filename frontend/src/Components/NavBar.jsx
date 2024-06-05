@@ -42,13 +42,19 @@ const NavBar = () => {
       </div>
       <Navbar.Collapse>
         <Navbar.Link active={path === "/"} as={"div"}>
-          <Link to={"/"} className="text-lg">Home</Link>
+          <Link to={"/"} className="text-lg">
+            Home
+          </Link>
         </Navbar.Link>
         <Navbar.Link active={path === "/about"} as={"div"}>
-          <Link to={"/about"} className="text-lg">About</Link>
+          <Link to={"/about"} className="text-lg">
+            About
+          </Link>
         </Navbar.Link>
         <Navbar.Link active={path === "/projects"} as={"div"}>
-          <Link to={"/projects"} className="text-lg">Projects</Link>
+          <Link to={"/projects"} className="text-lg">
+            Projects
+          </Link>
         </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>
