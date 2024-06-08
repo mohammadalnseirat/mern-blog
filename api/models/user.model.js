@@ -23,7 +23,7 @@ const userSchema = new Schema(
     profilePicture: {
       type: String,
       default:
-        "https://www.vecteezy.com/vector-art/22014159-avatar-icon-profile-icon-member-login-vector-isolated",
+        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
     },
   },
   { timestamps: true }

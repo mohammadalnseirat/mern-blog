@@ -90,7 +90,7 @@ const FooterCom = () => {
                 <Footer.Icon
                 href="https://github.com/mohammadalnseirat"
                 icon={BsGithub}
-                className="text-[#333]"
+                className="text-[#333] dark:text-gray-100"
                 />
                 <Footer.Icon
                 href="#"
