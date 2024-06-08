@@ -88,4 +88,50 @@ const signin_post = async (req, res, next) => {
   }
 };
 
-module.exports = { signup_post, signin_post };
+// google sign in post request
+const google_sign_in_post = async (req, res, next) => {
+  const { email, name, googlePhotoUrl } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    // check if user already exists:
+    if (user) {
+      // store token in cookie:
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY);
+      const { password, ...rest } = user._doc;
+      res
+        .status(200)
+        .cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
+        .json(rest);
+    } else {
+      // create reandom password:
+      const generatPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+
+      // hash password:
+      const hashedPassword = bcrypt.hashSync(generatPassword, 10);
+      // create new user:
+      const newUser = new User({
+        username:
+          name.toLowerCase().split(" ").join("") +
+          Math.random().toString(9).slice(-4),
+        email,
+        password: hashedPassword,
+        profilePicture: googlePhotoUrl,
+      });
+      // save to database:
+      await newUser.save();
+      // store token in cookie:
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY);
+      const { password, ...rest } = newUser._doc;
+      res
+        .status(200)
+        .cookie("jwt", token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
+        .json(rest);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { signup_post, signin_post, google_sign_in_post };

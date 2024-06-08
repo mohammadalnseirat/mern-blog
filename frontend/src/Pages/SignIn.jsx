@@ -9,6 +9,7 @@ import {
   signInFailure,
 } from "../redux/user/userSlice";
 import { useSelector } from "react-redux";
+import OAuth from "../Components/OAuth";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
@@ -110,6 +111,7 @@ const SignIn = () => {
                 </>
               )}
             </Button>
+            <OAuth/>
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <p>
@@ -118,7 +120,7 @@ const SignIn = () => {
                 to={"/sign-up"}
                 className="text-blue-800 font-semibold underline underline-offset-1 hover:text-red-500 transition-all ease-in duration-300"
               >
-                Sign In
+                Sign Up
               </Link>
             </p>
           </div>

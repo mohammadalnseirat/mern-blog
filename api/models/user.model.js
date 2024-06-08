@@ -20,6 +20,11 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    profilePicture: {
+      type: String,
+      default:
+        "https://www.vecteezy.com/vector-art/22014159-avatar-icon-profile-icon-member-login-vector-isolated",
+    },
   },
   { timestamps: true }
 );
