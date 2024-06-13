@@ -1,12 +1,17 @@
 import { Alert, Button, TextInput } from "flowbite-react";
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import {
+  updateFailure,
+  updateSuccess,
+  updateStart,
+} from "../redux/user/userSlice";
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -22,6 +27,15 @@ const DashProfile = () => {
   const [imageFileProgress, setImageFileProgress] = useState(0);
   // state for error:
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  // state for data:
+  const [formData, setFormData] = useState({});
+  // state for update successfully:
+  const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
+  // state for update error:
+  const [updateUserError, setUpdateUserError] = useState(null);
+  // state for uploading image:
+  const [imageFileUploading, setImageFileUploading] = useState(false);
+  const dispatch = useDispatch();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -39,6 +53,7 @@ const DashProfile = () => {
   }, [imageFile]);
   const uploadImage = async () => {
     console.log("image uploading....");
+    setImageFileUploading(true);
     setImageFileUploadError(null);
     // create storage:
     const storage = getStorage(app);
@@ -63,21 +78,64 @@ const DashProfile = () => {
         setImageFileProgress(null);
         setImageFile(null);
         setImageFileUrl(null);
+        setImageFileUploading(false);
       },
       // get the file url:
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageFileUrl(downloadURL);
+          setFormData({ ...formData, profilePicture: downloadURL });
+          setImageFileUploading(false);
         });
       }
     );
+  };
+  // handle changes:
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  // handle submit:
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setUpdateUserSuccess(null);
+    setUpdateUserError(null);
+
+    if (Object.keys(formData).length === 0) {
+      setUpdateUserError("No changes were made.");
+      return;
+    }
+    if (imageFileUploading) {
+      setUpdateUserError("Please wait while the image is uploading.");
+      return;
+    }
+    try {
+      dispatch(updateStart());
+      // fetch data:
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(updateFailure(data.message));
+        setUpdateUserError(data.message);
+      } else {
+        dispatch(updateSuccess(data));
+        setUpdateUserSuccess("User Profile Updated Successfully");
+      }
+    } catch (error) {
+      dispatch(updateFailure(error.message));
+      setUpdateUserError(error.message);
+    }
   };
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
       <h1 className="my-7 text-center text-3xl tracking-wide italic font-semibold">
         Profile
       </h1>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           type="file"
           accept="image/*"
@@ -124,14 +182,21 @@ const DashProfile = () => {
           defaultValue={currentUser.username}
           id="username"
           placeholder="username"
+          onChange={handleChange}
         />
         <TextInput
           type="email"
           defaultValue={currentUser.email}
           id="email"
           placeholder="Email"
+          onChange={handleChange}
         />
-        <TextInput type="password" placeholder="********" id="password" />
+        <TextInput
+          type="password"
+          placeholder="********"
+          id="password"
+          onChange={handleChange}
+        />
         <Button type="submit" gradientDuoTone={"purpleToBlue"} outline>
           Update
         </Button>
@@ -144,6 +209,16 @@ const DashProfile = () => {
           Sign Out
         </span>
       </div>
+      {updateUserSuccess && (
+        <Alert color={"success"} className="mt-5">
+          {updateUserSuccess}
+        </Alert>
+      )}
+      {updateUserError && (
+        <Alert color={"failure"} className="mt-5">
+          {updateUserError}
+        </Alert>
+      )}
     </div>
   );
 };

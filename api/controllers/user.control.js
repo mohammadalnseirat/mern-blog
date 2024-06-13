@@ -8,7 +8,6 @@ const test = (req, res) => {
 
 // put request for update api:
 const update_put = async (req, res, next) => {
-  console.log(req.user);
   // check userID:
   if (req.user.id !== req.params.userId) {
     return next(handleErrors(403, "You are not allowed to update this user."));
@@ -62,6 +61,9 @@ const update_put = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
 
 module.exports = {
   test,
