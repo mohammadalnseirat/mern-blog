@@ -15,6 +15,8 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
+  sigOutFailure,
+  signOutSuccess
 } from "../redux/user/userSlice";
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
@@ -155,6 +157,25 @@ const DashProfile = () => {
       dispatch(deleteUserFailure(error.message));
     }
   };
+ 
+  // handle sign out user:
+  const handleSignOut=async ()=>{
+    try {
+      const res= await fetch ('/api/user/sign-out',{
+        method:'POST',
+      })
+      const data=await res.json()
+      if(!res.ok){
+        console.log(data.message)
+        dispatch(sigOutFailure(data.message))
+      }else{
+        dispatch(signOutSuccess(data))
+      }
+    } catch (error) {
+      console.log(error.message)
+      dispatch(sigOutFailure(error.message))
+    }
+  }
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
       <h1 className="my-7 text-center text-3xl tracking-wide italic font-semibold">
@@ -234,7 +255,7 @@ const DashProfile = () => {
         >
           Delete Account
         </span>
-        <span className="cursor-pointer text-red-500  hover:text-red-700 transition-all duration-300">
+        <span onClick={handleSignOut} className="cursor-pointer text-red-500  hover:text-red-700 transition-all duration-300">
           Sign Out
         </span>
       </div>

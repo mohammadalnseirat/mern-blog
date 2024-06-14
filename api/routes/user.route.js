@@ -11,4 +11,5 @@ router.delete(
   verifyToken,
   userController.deleteAccount_delete
 );
+router.post("/sign-out", userController.signOut_post);
 module.exports = router;

@@ -75,8 +75,19 @@ const deleteAccount_delete = async (req, res, next) => {
   }
 };
 
+// sign-out request:
+
+const signOut_post = async (req, res, next) => {
+  try {
+    res.clearCookie("jwt").status(200).json("User has been SignedOut.");
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   test,
   update_put,
   deleteAccount_delete,
+  signOut_post,
 };
