@@ -74,7 +74,10 @@ const signin_post = async (req, res, next) => {
       );
     }
     //  create a token:
-    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET_KEY);
+    const token = jwt.sign(
+      { id: validUser._id, isAdmin: validUser.isAdmin },
+      process.env.JWT_SECRET_KEY
+    );
 
     // hide password:
     const { password: pass, ...rest } = validUser._doc;
@@ -96,7 +99,10 @@ const google_sign_in_post = async (req, res, next) => {
     // check if user already exists:
     if (user) {
       // store token in cookie:
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY);
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET_KEY
+      );
       const { password, ...rest } = user._doc;
       res
         .status(200)
@@ -122,7 +128,10 @@ const google_sign_in_post = async (req, res, next) => {
       // save to database:
       await newUser.save();
       // store token in cookie:
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY);
+      const token = jwt.sign(
+        { id: newUser._id, isAdmin: newUser.isAdmin },
+        process.env.JWT_SECRET_KEY
+      );
       const { password, ...rest } = newUser._doc;
       res
         .status(200)

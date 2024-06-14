@@ -71,7 +71,6 @@ const NavBar = () => {
                 alt="user-profile"
                 img={currentUser.profilePicture}
                 rounded
-                
               />
             }
           >
