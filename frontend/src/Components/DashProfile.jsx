@@ -14,14 +14,14 @@ import {
   updateStart,
   deleteUserStart,
   deleteUserSuccess,
-  deleteUserFailure
+  deleteUserFailure,
 } from "../redux/user/userSlice";
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 const DashProfile = () => {
   // get current user:
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, error } = useSelector((state) => state.user);
   // ref to hidden the file field
   const filePickerRef = useRef();
   // some state for image:
@@ -100,7 +100,6 @@ const DashProfile = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
- 
 
   // handle submit:
   const handleSubmit = async (e) => {
@@ -119,11 +118,11 @@ const DashProfile = () => {
     try {
       dispatch(updateStart());
       // fetch data:
-      const res= await fetch(`/api/user/update/${currentUser._id}`,{
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      })
+      });
       const data = await res.json();
       if (!res.ok) {
         dispatch(updateFailure(data.message));
@@ -131,7 +130,7 @@ const DashProfile = () => {
       } else {
         dispatch(updateSuccess(data));
         setUpdateUserSuccess("User Profile Updated Successfully");
-        setImageFileProgress(0)
+        setImageFileProgress(0);
       }
     } catch (error) {
       dispatch(updateFailure(error.message));
@@ -139,23 +138,23 @@ const DashProfile = () => {
     }
   };
   // handle delete user:
-  const handleDeleteUser=async()=>{
-    setShowModal(false)
+  const handleDeleteUser = async () => {
+    setShowModal(false);
     try {
-      dispatch(deleteUserStart())
-      const res = await fetch(`/api/user/delete/${currentUser._id}`,{
-        method:'DELETE',
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
       });
-      const data=await res.json()
-      if(!res.ok){
-        dispatch(deleteUserFailure(data.message))
-      }else{
-        dispatch(deleteUserSuccess(data))
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(deleteUserFailure(data.message));
+      } else {
+        dispatch(deleteUserSuccess(data));
       }
     } catch (error) {
-      dispatch(deleteUserFailure(error.message))
+      dispatch(deleteUserFailure(error.message));
     }
-  }
+  };
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
       <h1 className="my-7 text-center text-3xl tracking-wide italic font-semibold">
@@ -185,7 +184,7 @@ const DashProfile = () => {
                   position: "absolute",
                   top: 0,
                   left: 0,
-                  zIndex:1
+                  zIndex: 1,
                 },
                 path: {
                   stroke: `rgba(62, 152, 199, ${imageFileProgress / 100})`,
@@ -249,13 +248,18 @@ const DashProfile = () => {
           {updateUserError}
         </Alert>
       )}
+      {error && (
+        <Alert color={"failure"} className="mt-5">
+          {error}
+        </Alert>
+      )}
       <Modal
         show={showModal}
         popup
         size={"xl"}
         onClose={() => setShowModal(false)}
       >
-        <Modal.Header/>
+        <Modal.Header />
         <Modal.Body>
           <div className="text-center">
             <HiOutlineExclamationCircle className="h-14 w-14 text-red-600 mb-4 mx-auto" />
@@ -264,7 +268,9 @@ const DashProfile = () => {
             </h3>
           </div>
           <div className="flex items-center justify-center gap-5">
-            <Button color={'failure'} onClick={handleDeleteUser}>Yes,I'm Sure</Button>
+            <Button color={"failure"} onClick={handleDeleteUser}>
+              Yes,I'm Sure
+            </Button>
             <Button
               color={"success"}
               onClick={() => setShowModal(false)}
