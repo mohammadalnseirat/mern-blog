@@ -165,11 +165,11 @@ const CreatePost = () => {
           required
           onChange={(value) => setFormData({ ...formData, content: value })}
         />
-        <Button type="submit" className='mb-5'gradientDuoTone={"greenToBlue"} >
+        <Button type="submit" className='mb-5'gradientDuoTone={"greenToBlue"} outline>
           Puplish
         </Button>
         {puplishError && (
-          <Alert className="mt-6 font-semibold" color={"failure"}>
+          <Alert className="mt-1 font-semibold" color={"failure"}>
             {puplishError}
           </Alert>
         )}

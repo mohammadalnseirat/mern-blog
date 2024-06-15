@@ -5,8 +5,11 @@ import { Sidebar } from "flowbite-react";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { sigOutFailure, signOutSuccess } from "../redux/user/userSlice";
+import { IoDocumentsSharp } from "react-icons/io5";
+import { useSelector } from "react-redux";
 
 const DashSidebar = () => {
+  const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const location = useLocation();
   const [tab, setTab] = useState("");
@@ -37,16 +40,25 @@ const DashSidebar = () => {
   return (
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
-        <Sidebar.ItemGroup>
+        <Sidebar.ItemGroup className="flex flex-col gap-4">
           <Link to={"/dashboard?tab=profile"}>
             <Sidebar.Item
               active={tab === "profile"}
               icon={FaUser}
-              label="User"
+              label={currentUser.isAdmin ? "Admin":"User"}
               labelColor="dark"
               as="div"
             >
               Profile
+            </Sidebar.Item>
+          </Link>
+          <Link to={"/dashboard?tab=posts"}>
+            <Sidebar.Item
+              active={tab === "posts"}
+              icon={IoDocumentsSharp}
+              as="div"
+            >
+              Posts
             </Sidebar.Item>
           </Link>
           <Sidebar.Item
