@@ -11,8 +11,10 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 const CreatePost = () => {
+  const navigate = useNavigate();
   // state to save image:
   const [file, setFile] = useState(null);
   // state for error uploading image:
@@ -21,6 +23,8 @@ const CreatePost = () => {
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   // form data to store all data from input:
   const [formData, setFormData] = useState({});
+  // state for puplish error:
+  const [puplishError, setPuplishError] = useState(null);
 
   // handle upload image:
   const handleUploadImage = async () => {
@@ -61,13 +65,39 @@ const CreatePost = () => {
       console.log(error);
     }
   };
+
+  // handleSubmitData
+  const handleSubmitData = async (e) => {
+    // prevent Dafault :
+    e.preventDefault();
+    try {
+      // creat response and fetch data from api:
+      const res = await fetch("/api/post/create-post", {
+        method: "POST",
+        headers: { "Content-Type": "appliction/json" },
+        body: JSON.stringify(formData),
+      });
+      // convert data:
+      const data = await res.json();
+      if (!res.ok) {
+        setPuplishError(data.error);
+      }
+      if (res.ok) {
+        setPuplishError(null);
+        navigate(`/post/${data.slug}`);
+      }
+    } catch (error) {
+      setPuplishError("Something went wrong. Please try again");
+    }
+  };
+
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen ">
       <h1 className="text-center text-3xl font-semibold my-7">
         {" "}
         Create a Post
       </h1>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmitData}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
             placeholder="Title"
@@ -75,8 +105,15 @@ const CreatePost = () => {
             className="flex-1"
             required
             type="text"
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
           />
-          <Select>
+          <Select
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
+          >
             <option value={"uncategorized"}>Select a Category</option>
             <option value="javascript">JavaScript</option>
             <option value="reactjs">React Js</option>
@@ -87,7 +124,7 @@ const CreatePost = () => {
           <FileInput
             type="file"
             accept="image/*"
-            onChange={() => setFile(e.target.files[0])}
+            onChange={(e) => setFile(e.target.files[0])}
           />
           <Button
             type="button"
@@ -110,13 +147,15 @@ const CreatePost = () => {
           </Button>
         </div>
         {imageUploadError && (
-          <Alert color={"failure"}>{imageUploadError}</Alert>
+          <Alert className="font-semibold" color={"failure"}>
+            {imageUploadError}
+          </Alert>
         )}
         {formData.image && (
           <img
             src={formData.image}
             alt="upload-image-post"
-            className="w-full h-72 object-cover"
+            className="w-full h-[600px] object-cover"
           />
         )}
         <ReactQuill
@@ -124,10 +163,16 @@ const CreatePost = () => {
           placeholder="write something..."
           className="h-72 mb-12"
           required
+          onChange={(value) => setFormData({ ...formData, content: value })}
         />
-        <Button type="submit" gradientDuoTone={"purpleToPink"}>
+        <Button type="submit" className='mb-5'gradientDuoTone={"greenToBlue"} >
           Puplish
         </Button>
+        {puplishError && (
+          <Alert className="mt-6 font-semibold" color={"failure"}>
+            {puplishError}
+          </Alert>
+        )}
       </form>
     </div>
   );

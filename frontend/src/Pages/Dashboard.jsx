@@ -22,6 +22,7 @@ const Dashboard = () => {
 
       {/* profile... */}
       {tab === "profile" && <DashProfile />}
+
     </div>
   );
 };
