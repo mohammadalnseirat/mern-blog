@@ -2,9 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const cookieParser = require("cookie-parser")
+const cookieParser = require("cookie-parser");
 const userRouter = require("./routes/user.route");
 const authRouter = require("./routes/auth.route");
+const postRouter = require("./routes/post.route");
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 // use the user router:
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/post", postRouter);
 
 // Add middleware and a function to handle errors:
 app.use((err, req, res, next) => {
