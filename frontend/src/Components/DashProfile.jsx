@@ -2,6 +2,7 @@ import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import React, { useEffect, useRef, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   getDownloadURL,
   getStorage,
@@ -23,7 +24,7 @@ import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 const DashProfile = () => {
   // get current user:
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   // ref to hidden the file field
   const filePickerRef = useRef();
   // some state for image:
@@ -244,9 +245,21 @@ const DashProfile = () => {
           id="password"
           onChange={handleChange}
         />
-        <Button type="submit" gradientDuoTone={"purpleToBlue"} outline>
-          Update
+        <Button
+          type="submit"
+          gradientDuoTone={"purpleToBlue"}
+          outline
+          disabled={loading || imageFileUploading}
+        >
+          {loading ? "Loading..." : " Update"}
         </Button>
+        {currentUser.isAdmin && (
+          <Link to={"/create-post"}>
+            <Button gradientDuoTone={"purpleToPink"} outline className="w-full">
+              Create a Post
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="flex items-center justify-between mt-4">
         <span
