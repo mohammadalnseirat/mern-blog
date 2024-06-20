@@ -29,4 +29,49 @@ const createPost_post = async (req, res, next) => {
   }
 };
 
-module.exports = { createPost_post };
+// get post :
+const get_posts = async (req, res, next) => {
+  try {
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const limit = parseInt(req.query.limit) || 9;
+    const sortDirection = req.query.order === "asc" ? 1 : -1;
+    // find all posts and dependencies on :
+    const posts = await Post.find({
+      ...(req.query.userId && { userId: req.query.userId }),
+      ...(req.query.category && { category: req.query.category }),
+      ...(req.query.slug && { slug: req.query.slug }),
+      ...(req.query.postId && { _id: req.query.postId }),
+      // for searchTerm:
+      ...(req.queryry.searchTerm && {
+        $or: [
+          { title: { $regex: req.query.searchTerm, $options: "i" } },
+          { content: { $regex: req.query.searchTerm, $options: "i" } },
+        ],
+      }),
+    })
+      .sort({ updatedAt: sortDirection })
+      .skip(startIndex)
+      .limit(limit);
+
+    // get totaltPosts:
+    const totalPosts = await Post.countDocuments();
+
+    // get total post for last month:
+    const now = new Date();
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+
+    const lastMonthPosts = await Post.countDocuments({
+      createdAt: { $gte: oneMonthAgo },
+    });
+    // create response and send data to frontend:
+    res.status(200).json({ posts, totalPosts, lastMonthPosts });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createPost_post, get_posts };
