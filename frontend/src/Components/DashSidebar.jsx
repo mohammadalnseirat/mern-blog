@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { sigOutFailure, signOutSuccess } from "../redux/user/userSlice";
 import { IoDocumentsSharp } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import { FaUsersCog } from "react-icons/fa";
 
 const DashSidebar = () => {
   const { currentUser } = useSelector((state) => state.user);
@@ -45,22 +46,31 @@ const DashSidebar = () => {
             <Sidebar.Item
               active={tab === "profile"}
               icon={FaUser}
-              label={currentUser.isAdmin ? "Admin":"User"}
+              label={currentUser.isAdmin ? "Admin" : "User"}
               labelColor="dark"
               as="div"
             >
               Profile
             </Sidebar.Item>
           </Link>
-          <Link to={"/dashboard?tab=posts"}>
-            <Sidebar.Item
-              active={tab === "posts"}
-              icon={IoDocumentsSharp}
-              as="div"
-            >
-              Posts
-            </Sidebar.Item>
-          </Link>
+          {currentUser.isAdmin && (
+            <Link to={"/dashboard?tab=posts"}>
+              <Sidebar.Item
+                active={tab === "posts"}
+                icon={IoDocumentsSharp}
+                as="div"
+              >
+                Posts
+              </Sidebar.Item>
+            </Link>
+          )}
+          {currentUser.isAdmin && (
+            <Link to={`/dashboard?tab=users`}>
+              <Sidebar.Item active={tab === "users"} icon={FaUsersCog} as="div">
+                Users
+              </Sidebar.Item>
+            </Link>
+          )}
           <Sidebar.Item
             className="cursor-pointer"
             icon={FaArrowRight}

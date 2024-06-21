@@ -84,10 +84,56 @@ const signOut_post = async (req, res, next) => {
     next(error);
   }
 };
+// get users:
+const getUsers_get = async (req, res, next) => {
+  // check if user is Admin or not:
+  if (!req.user.isAdmin) {
+    return next(handleErrors(403, "You are not allowed to see all users."));
+  }
+  try {
+    // start Index
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    // limit users :
+    const limit = parseInt(req.query.limit) || 9;
+    // sort direction :
+    const sortDirection = req.query.sort === "asc" ? 1 : -1;
+    // find all users :
+    const users = await User.find()
+      .sort(sortDirection)
+      .skip(startIndex)
+      .limit(limit);
+    // Note that: we get the users with the password  we gonna not show the passwords:
+    const userWithoutPassword = users.map((user) => {
+      const { password, ...rest } = user._doc;
+      return rest;
+    });
+    // get total users:
+    const totalUsers = await User.countDocuments();
+    // get all users last month:
+    const now = new Date();
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+    const lastMonthUsers = await User.countDocuments({
+      createdAt: { $gte: oneMonthAgo },
+    });
 
+    // create response and send data to front end:
+    res.status(200).json({
+      users: userWithoutPassword,
+      totalUsers,
+      lastMonthUsers,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = {
   test,
   update_put,
   deleteAccount_delete,
   signOut_post,
+  getUsers_get,
 };

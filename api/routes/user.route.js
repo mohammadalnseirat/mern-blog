@@ -12,4 +12,5 @@ router.delete(
   userController.deleteAccount_delete
 );
 router.post("/sign-out", userController.signOut_post);
+router.get("/get-users", verifyToken, userController.getUsers_get);
 module.exports = router;
