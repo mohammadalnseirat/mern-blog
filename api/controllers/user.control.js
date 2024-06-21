@@ -63,8 +63,9 @@ const update_put = async (req, res, next) => {
 };
 
 // delete account from database:
+// && : we want admin to be able to delete user.
 const deleteAccount_delete = async (req, res, next) => {
-  if (req.user.id !== req.params.userId) {
+  if (req.user.isAdmin && req.user.id !== req.params.userId) {
     return next(handleErrors(403, "You are not allowed to delete this user."));
   }
   try {
